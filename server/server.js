@@ -7,6 +7,7 @@ var express     = require('express'),
 var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require("./models/todo.js");
 var {User} = require("./models/user.js");
+var {authenticate} = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT || 3000;
@@ -99,6 +100,7 @@ app.get("/users", (req, res) => {
   });
 });
 
+
 app.post("/users", function(req, res) {
   var body = _.pick(req.body, ["email", "password"]);
   var user = new User(body);
@@ -111,6 +113,9 @@ app.post("/users", function(req, res) {
   });
 });
 
+app.get("/users/me", authenticate, (req, res) => {
+  res.send(req.user);
+});
 
 app.listen(port, () => {
   console.log(`Server started at port: ${port} at time: ${Date.now()}`);
